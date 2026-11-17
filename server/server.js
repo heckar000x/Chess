@@ -12,8 +12,16 @@ const __dirname = path.dirname(__filename);
 const PORT = process.env.PORT || 3001;
 
 const app = express();
-app.use(cors());
+app.use(cors({ origin: '*', credentials: true }));
 app.use(express.json());
+// Allow embedding in Arena preview iframe
+app.use((req, res, next) => {
+  res.setHeader('X-Frame-Options', 'ALLOWALL');
+  res.setHeader('Content-Security-Policy', 'frame-ancestors *');
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Headers', '*');
+  next();
+});
 
 // Simple file DB for persistence (fallback from sqlite)
 const DB_PATH = path.join(__dirname, 'db.json');
